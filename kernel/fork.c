@@ -15,6 +15,7 @@ extern void write_verify(unsigned long address);
 
 long last_pid=0;
 
+// JDL: runs write_verify every 4096 bytes from addr rounded down to addr+size
 void verify_area(void * addr,int size)
 {
 	unsigned long start;
@@ -53,6 +54,10 @@ int copy_mem(int nr,struct task_struct * p)
 	return 0;
 }
 
+
+// JDL: TSS = Task State Segment
+//      GDT = Global Descriptor Table 
+//      LDT = Local Descriptor Table 
 /*
  *  Ok, this is the main fork-routine. It copies the system process
  * information (task[nr]) and sets up the necessary registers. It
@@ -121,6 +126,9 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	return last_pid;
 }
 
+// JDL: increments last_pid until it finds a pid not in use
+//      returns i where task[i] is empty
+//      if no such i exists, returns -EAGAIN
 int find_empty_process(void)
 {
 	int i;
