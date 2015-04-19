@@ -116,6 +116,7 @@ int sys_exit(int error_code)
 	return do_exit((error_code&0xff)<<8);
 }
 
+// JDL: I modified the if statement to be more readable
 int sys_waitpid(pid_t pid,int * stat_addr, int options)
 {
 	int flag=0;
@@ -124,10 +125,13 @@ int sys_waitpid(pid_t pid,int * stat_addr, int options)
 	verify_area(stat_addr,4);
 repeat:
 	for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
-		if (*p && *p != current &&
-		   (pid==-1 || (*p)->pid==pid ||
-		   (pid==0 && (*p)->pgrp==current->pgrp) ||
-		   (pid<0 && (*p)->pgrp==-pid)))
+		if (*p 
+		    && *p != current 
+		    && (pid==-1 
+		        || (*p)->pid==pid 
+		        || (pid==0 && (*p)->pgrp==current->pgrp)
+		        || (pid<0 && (*p)->pgrp==-pid))
+		   )
 			if ((*p)->father == current->pid) {
 				flag=1;
 				if ((*p)->state==TASK_ZOMBIE) {
