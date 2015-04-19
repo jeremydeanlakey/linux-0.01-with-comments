@@ -39,21 +39,39 @@ static inline void send_sig(long sig,struct task_struct * p,int priv)
 		p->signal |= (1<<(sig-1));
 }
 
+// JDL: Coding style was horrible.
+//      I made identation cosistent by depth so that it was readable. 
 void do_kill(long pid,long sig,int priv)
 {
+	// JDL: p=starting point, just after the end of the task list
 	struct task_struct **p = NR_TASKS + task;
 
-	if (!pid) while (--p > &FIRST_TASK) {
-		if (*p && (*p)->pgrp == current->pid)
+	if (!pid){
+		// JDL: iterate through the task list
+		//      send_sig to all tasks where the pgrp == current pid
+		while (--p > &FIRST_TASK) {
+			if (*p && (*p)->pgrp == current->pid)
+				send_sig(sig,*p,priv);
+		}
+	} else if (pid>0){
+		// JDL: iterate through the task list
+		//      send_sig when pid is found
+		while (--p > &FIRST_TASK) {
+			if (*p && (*p)->pid == pid)
+				send_sig(sig,*p,priv);
+				// JDL: couldn't we break here?
+		}
+	} else if (pid == -1){ 
+		// JDL: send_sig to all pid's in the task list
+		while (--p > &FIRST_TASK)
 			send_sig(sig,*p,priv);
-	} else if (pid>0) while (--p > &FIRST_TASK) {
-		if (*p && (*p)->pid == pid)
-			send_sig(sig,*p,priv);
-	} else if (pid == -1) while (--p > &FIRST_TASK)
-		send_sig(sig,*p,priv);
-	else while (--p > &FIRST_TASK)
-		if (*p && (*p)->pgrp == -pid)
-			send_sig(sig,*p,priv);
+	} else // if pid < -1
+		// JDL: iterate through the task list
+		//      send_sig to all tasks where the pgrp == -(current pid)
+		//      ie repeat the first if except use -pid
+		while (--p > &FIRST_TASK)
+			if (*p && (*p)->pgrp == -pid)
+				send_sig(sig,*p,priv);
 }
 
 // JDL: call do_kill, set priv if current has no user id (system?)
