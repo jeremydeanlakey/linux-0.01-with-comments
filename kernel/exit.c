@@ -26,6 +26,7 @@ void release(struct task_struct * p)
 	panic("trying to release non-existent task");
 }
 
+// JDL: sets bit sig of p->signal, but only if p and current have the same user or priv is non-zero 
 static inline void send_sig(long sig,struct task_struct * p,int priv)
 {
 	if (!p || sig<1 || sig>32)
@@ -55,6 +56,7 @@ void do_kill(long pid,long sig,int priv)
 			send_sig(sig,*p,priv);
 }
 
+// JDL: call do_kill, set priv if current has no user id (system?)
 int sys_kill(int pid,int sig)
 {
 	do_kill(pid,sig,!(current->uid || current->euid));
