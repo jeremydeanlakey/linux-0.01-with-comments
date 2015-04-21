@@ -93,8 +93,8 @@ struct tty_queue * table_list[]={
 
 void tty_init(void)
 {
-	rs_init();
-	con_init();
+	rs_init(); // initializes console interupts, see kernel/console.c
+	con_init(); // kernel/serial.c
 }
 
 void tty_intr(struct tty_struct * tty, int signal)
