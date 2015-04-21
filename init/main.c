@@ -82,8 +82,8 @@ void main(void)		/* This really IS void, no error here. */
  * Interrupts are still disabled. Do necessary setups, then
  * enable them
  */
-	time_init();
-	tty_init();
+	time_init(); // see above
+	tty_init(); // kernel/tty_io.c
 	trap_init();
 	sched_init();
 	buffer_init();
