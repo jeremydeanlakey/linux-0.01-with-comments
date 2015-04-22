@@ -84,8 +84,8 @@ void main(void)		/* This really IS void, no error here. */
  */
 	time_init(); // see above
 	tty_init(); // kernel/tty_io.c
-	trap_init();
-	sched_init();
+	trap_init(); // kernel/traps.c 
+	sched_init(); // kernel/sched.c 
 	buffer_init();
 	hd_init();
 	sti();
