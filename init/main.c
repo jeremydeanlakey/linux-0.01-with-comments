@@ -73,7 +73,9 @@ static void time_init(void)
 	BCD_TO_BIN(time.tm_mday);
 	BCD_TO_BIN(time.tm_mon);
 	BCD_TO_BIN(time.tm_year);
-	startup_time = kernel_mktime(&time);
+	// JDL: sets startup_time in kernel/schedule.c
+	//      kernel_mktime is in kernel/mktime.c and converts a tm to long
+	startup_time = kernel_mktime(&time); 
 }
 
 void main(void)		/* This really IS void, no error here. */
@@ -82,11 +84,12 @@ void main(void)		/* This really IS void, no error here. */
  * Interrupts are still disabled. Do necessary setups, then
  * enable them
  */
-	time_init(); // see above
-	tty_init(); // kernel/tty_io.c
-	trap_init(); // kernel/traps.c 
-	sched_init(); // kernel/sched.c 
-	buffer_init();
+	time_init(); // sets kernel startup time, see above
+	tty_init(); // initializes console, see kernel/tty_io.c
+	trap_init(); // initializes all the traps, see kernel/traps.c 
+	sched_init(); // TODO kernel/sched.c 
+	// sets up a buffer, looks like a heap I made in a hw plus a linked list of empty blocks
+	buffer_init(); // see fs/buffer.c for more info
 	hd_init();
 	sti();
 	move_to_user_mode();
