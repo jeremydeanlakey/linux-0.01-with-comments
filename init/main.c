@@ -93,9 +93,10 @@ void main(void)		/* This really IS void, no error here. */
 	hd_init(); // preps/cleans struct arrays request and hd, sets a trap gate, and pauses some io?
 	           // see kernel/hd.c
 	sti(); // enable interupts, this is a macro for the identical assmelby instruction
-	move_to_user_mode();
+	move_to_user_mode();  // macro that runs some assembly in asm/system.h 
+	// TODO what does fork do in this case?
 	if (!fork()) {		/* we count on this going ok */
-		init();
+		init(); // see below
 	}
 /*
  *   NOTE!!   For any other task 'pause()' would mean we have to get a
