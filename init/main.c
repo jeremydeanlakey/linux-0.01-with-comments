@@ -90,8 +90,9 @@ void main(void)		/* This really IS void, no error here. */
 	sched_init(); // TODO kernel/sched.c 
 	// sets up a buffer, looks like a heap I made in a hw plus a linked list of empty blocks
 	buffer_init(); // see fs/buffer.c for more info
-	hd_init();
-	sti();
+	hd_init(); // preps/cleans struct arrays request and hd, sets a trap gate, and pauses some io?
+	           // see kernel/hd.c
+	sti(); // enable interupts, this is a macro for the identical assmelby instruction
 	move_to_user_mode();
 	if (!fork()) {		/* we count on this going ok */
 		init();
