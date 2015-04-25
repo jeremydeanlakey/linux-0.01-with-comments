@@ -94,7 +94,8 @@ void main(void)		/* This really IS void, no error here. */
 	           // see kernel/hd.c
 	sti(); // enable interupts, this is a macro for the identical assmelby instruction
 	move_to_user_mode();  // macro that runs some assembly in asm/system.h 
-	// TODO what does fork do in this case?
+	// TODO fork() splits into two processes, the child process runs init()
+	//      while task0 moves on to the pause() loop
 	if (!fork()) {		/* we count on this going ok */
 		init(); // see below
 	}
@@ -122,6 +123,8 @@ static int printf(const char *fmt, ...)
 static char * argv[] = { "-",NULL };
 static char * envp[] = { "HOME=/usr/root", NULL };
 
+
+// JDL: executes "/bin/update" in a new process and then grabs tty0 and starts the shell?
 void init(void)
 {
 	int i,j;
@@ -129,8 +132,11 @@ void init(void)
 	setup(); // JDL: among other things, mounts root
 	if (!fork())
 		_exit(execve("/bin/update",NULL,NULL));
+	// JDL: dup apparently finds an empty fd, sets the corresponding file pointer 
+	//      to the fp of the argument
+	//      so apparently this is opening three copies of tty0
 	(void) open("/dev/tty0",O_RDWR,0);
-	(void) dup(0); // dup apparently finds an empty fd, sets the corresponding file pointer to the fp of the argument
+	(void) dup(0);
 	(void) dup(0);
 	printf("%d buffers = %d bytes buffer space\n\r",NR_BUFFERS,
 		NR_BUFFERS*BLOCK_SIZE);
