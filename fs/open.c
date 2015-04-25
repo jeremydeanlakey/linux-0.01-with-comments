@@ -169,19 +169,23 @@ int sys_creat(const char * pathname, int mode)
 	return sys_open(pathname, O_CREAT | O_TRUNC, mode);
 }
 
+// JDL: closes the file
 int sys_close(unsigned int fd)
 {	
 	struct file * filp;
 
 	if (fd >= NR_OPEN)
 		return -EINVAL;
-	current->close_on_exec &= ~(1<<fd);
+	// JDL: clears the bit #fd in bitmap close_on_exec 
+	current->close_on_exec &= ~(1<<fd); 
 	if (!(filp = current->filp[fd]))
 		return -EINVAL;
+	// JDL: deletes the file pointer
 	current->filp[fd] = NULL;
 	if (filp->f_count == 0)
 		panic("Close: file count is 0");
 	if (--filp->f_count)
+	// JDL: decrements the reference count
 		return (0);
 	iput(filp->f_inode);
 	return (0);
