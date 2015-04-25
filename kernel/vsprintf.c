@@ -31,6 +31,8 @@ int __res; \
 __asm__("divl %4":"=a" (n),"=d" (__res):"0" (n),"1" (0),"r" (base)); \
 __res; })
 
+
+// JDL: writes num (formatted) to str
 static char * number(char * str, int num, int base, int size, int precision
 	,int type)
 {
@@ -83,6 +85,7 @@ static char * number(char * str, int num, int base, int size, int precision
 	return str;
 }
 
+// writes a string from fmt to buf, formatting the %x parts using values in args 
 int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int len;
