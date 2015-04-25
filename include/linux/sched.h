@@ -47,6 +47,7 @@ struct i387_struct {
 	long	st_space[20];	/* 8*10 bytes for each FP-reg = 80 bytes */
 };
 
+// JDL: task state segment: saved register state and other task state
 struct tss_struct {
 	long	back_link;	/* 16 high bits zero */
 	long	esp0;
@@ -101,6 +102,7 @@ struct task_struct {
 /* ldt for this task 0 - zero 1 - cs 2 - ds&ss */
 	struct desc_struct ldt[3];
 /* tss for this task */
+// JDL: task state segment, holds registers, etc.  see above
 	struct tss_struct tss;
 };
 
