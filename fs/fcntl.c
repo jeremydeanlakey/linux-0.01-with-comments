@@ -9,6 +9,9 @@
 
 extern int sys_close(int fd);
 
+// JDL: apparently starts at file descriptor arg and increments 
+//      util arg is an empty file descriptor, sets its file pointer
+//      to the file pointer of fd and returns arg.
 static int dupfd(unsigned int fd, unsigned int arg)
 {
 	if (fd >= NR_OPEN || !current->filp[fd])
@@ -27,6 +30,7 @@ static int dupfd(unsigned int fd, unsigned int arg)
 	return arg;
 }
 
+// JDL: closes the file at newfd, and opens another copy of oldfd at newfd? 
 int sys_dup2(unsigned int oldfd, unsigned int newfd)
 {
 	sys_close(newfd);
