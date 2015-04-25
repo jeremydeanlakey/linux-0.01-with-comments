@@ -126,11 +126,11 @@ void init(void)
 {
 	int i,j;
 
-	setup();
+	setup(); // JDL: among other things, mounts root
 	if (!fork())
 		_exit(execve("/bin/update",NULL,NULL));
 	(void) open("/dev/tty0",O_RDWR,0);
-	(void) dup(0);
+	(void) dup(0); // dup apparently finds an empty fd, sets the corresponding file pointer to the fp of the argument
 	(void) dup(0);
 	printf("%d buffers = %d bytes buffer space\n\r",NR_BUFFERS,
 		NR_BUFFERS*BLOCK_SIZE);
