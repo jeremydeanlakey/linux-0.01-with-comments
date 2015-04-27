@@ -10,6 +10,7 @@
 #include <linux/kernel.h>
 #include <asm/segment.h>
 
+// JDL: updates time stamp on filename using values in times
 int sys_utime(char * filename, struct utimbuf * times)
 {
 	struct m_inode * inode;
@@ -29,17 +30,20 @@ int sys_utime(char * filename, struct utimbuf * times)
 	return 0;
 }
 
+// JDL: apparently checks if current process has access rights (the ones specified in mode) to filename
 int sys_access(const char * filename,int mode)
 {
 	struct m_inode * inode;
 	int res;
 
-	mode &= 0007;
+	mode &= 0007; // JDL: only working w/ permissions for all users
 	if (!(inode=namei(filename)))
 		return -EACCES;
 	res = inode->i_mode & 0777;
 	iput(inode);
-	if (!(current->euid && current->uid))
+	if (!(current->euid && current->uid)) 
+		// JDL: so if process don't have both uid and effective uid (ie is kernel?)
+		//      then assume all access (including execution if anyone has execution access)
 		if (res & 0111)
 			res = 0777;
 		else
@@ -47,7 +51,7 @@ int sys_access(const char * filename,int mode)
 	if (current->euid == inode->i_uid)
 		res >>= 6;
 	else if (current->egid == inode->i_gid)
-		res >>= 6;
+		res >>= 6; // JDL: why is this not 3?
 	if ((res & 0007 & mode) == mode)
 		return 0;
 	return -EACCES;
